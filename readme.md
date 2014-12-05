@@ -15,7 +15,7 @@ Outils utilisés :
     -	Le Framework css de grille utilisé est : 34Grid (34grid.com)
 
 ********************************************************
-I.	Installation de l’environnement de travail :*********
+I.	Installation de l’environnement de travail :
 ********************************************************
 
 a.	Installation de Node.JS :

@@ -4,24 +4,25 @@
     <meta charset="UTF-8">
     <title>Chat Application</title>
     <!-- CSS imports-->
-    <link href="frontend/css/34gs-queries.css">
-    <link href="frontend/css/34gs.css">
-    <link href="frontend/css/bootstrap.css">
+    <link rel="stylesheet" href="frontend/css/34gs-queries.css">
+    <link rel="stylesheet"  href="frontend/css/34gs.css">
+    <link rel="stylesheet" href="frontend/css/bootstrap.css">
+    <link rel="stylesheet" href="frontend/css/bootstrap.min.css">
     <!-- JS scripts -->
     <script src="frontend/js/jquery-1.10.1.min.js"></script>
 </head>
 <body>
 
-    <div class="navbar navbar-fixed-top" role="navigation">
-        <div class="container" ><h1> Application de messagerie instantanée</h1>
+    <div class="navbar" role="navigation">
+        <div class="container " >
             <div class="navbar-header">
-                <h3> Houssam KOURDACHE <br/>
-                    &<br/>
-                    Baptiste TRAIN</h3>
+                <h3>Application de messagerie instantanée</h3>
+                <h3> Houssam KOURDACHE |  Baptiste TRAIN</h3>
             </div>
         </div>
     </div>
-        <hr/>
+
+    <div class="container container-fluid">
         <ul>
            <li>	Pour la création du serveur d’application, on a utilisé Node.JS</li>
             <li>Pour mettre en place une application communiquant en temps réel, on a eus recours à la librairie Socket.IO.</li>
@@ -30,6 +31,17 @@
             <li>Editeur web : WebStorm.</li>
             <li>Le Framework css de grille utilisé est : 34Grid (34grid.com)</li>
         </ul>
+        <hr>
+        </br></br>
+        <!-- division to add new user -->
+        <div class="panel panel-success">
+            <div class="panel-heading"><h3>Se connecter en tant qu'un nouveau utilisateur</h3></div>
+            <div class="panel-body">
+                <input/>
+                <button></button>
+            </div>
+        </div>
+
     </div>
 </body>
 </html>
