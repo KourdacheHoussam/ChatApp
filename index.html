@@ -9,14 +9,21 @@
     <link rel="stylesheet" href="frontend/css/bootstrap.css">
     <link rel="stylesheet" href="frontend/css/bootstrap.min.css">
     <!-- JS scripts -->
+    <script src="frontend/js/jquery-1.10.1.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <!-- chargement du script socket io : quand le serveur est démarré toutes
+     les librairies sont accessibles en tapant le bon chemin dans l'url-->
+    <script src="http://localhost:1337/socket.io/socket.io.js"></script>
+    <!-- il faut égalemment importer le script qui se charge du traitement du côté client, i-e client.js-->
+    <script  src="backend/client/client.js"></script>
+
+
 </head>
 <body>
     <!-- HEADER-->
     <div class="navbar navbar-header nav-justified" role="navigation">
         <div class="container " >
-            <div class="navbar-header">
-
-            </div>
+            <div class="navbar-header"></div>
         </div>
     </div>
     <!-- BODY-->
@@ -47,7 +54,7 @@
                 <div class="panel panel-success">
                     <div class="panel-heading text-center"><h3>Nouveau Utilisateur</h3></div>
                     <div class="panel-body">
-                        <form id="loginform" class="form-horizontal" method="post">
+                        <form id="login-form" class="form-horizontal" method="post">
                             <div class="form-group">
                                 <div class="col-md-10 col-md-offset-1">
                                     <input id="pseudo" name="pseudo" type="text" placeholder="pseudo" class="form-control">
@@ -55,7 +62,7 @@
                             </div>
                             <div class="form-group">
                                 <div class="col-md-10 col-md-offset-1">
-                                    <input id="adressemail" name="adressemail" type="text" placeholder="Adresse mail" class="form-control">
+                                    <input id="email" name="email" type="text" placeholder="Adresse mail" class="form-control">
                                 </div>
                             </div>
                         </form>
@@ -71,12 +78,6 @@
         </div>
     </div>
 
-    <!-- il faut égalemment importer le script qui se charge du traitement du côté client, i-e client.js-->
-    <script  src="backend/client/client.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-    <!-- chargement du script socket io : quand le serveur est démarré toutes
-     les librairies sont accessibles en tapant le bon chemin dans l'url-->
-    <script src="http://localhost:1337/socket.io/socket.io.js"></script>
 
 </body>
 </html>

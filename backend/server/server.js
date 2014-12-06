@@ -39,17 +39,15 @@ httpServer.listen(port);
 
 /**  on écoute l'evènement "connection" */
 io.sockets.on('connection', function(socket){    /** socket = socket utilisateur en cours*/
+
     console.log("nouveau utilisateur");
+
     /** Dans cette partie on reçoit les évènement prevenant du côté client */
     socket.on('login', function(user){  // A la réception de loginEvent, j'envoi une fonction de CallBack
-        console.log(user.adressemail);
+        console.log(user);
     });
 
 
-
-    socket.on('try', function(msg){
-        console.log(msg) ;
-    });
 });
 
 

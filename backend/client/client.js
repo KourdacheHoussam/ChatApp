@@ -1,16 +1,10 @@
 /**
  * Created by Housssam on 06/12/2014.
  */
-
 /**
  * Ici, on va se connecter au site depuis SOCKET.IO
- *
  * Remarque : ici on utilise JQUERY
- */
-
-
-
-/**
+ *
  *  --1--  : connexion à socket IO
  */
 
@@ -20,12 +14,12 @@
     * on appelle la méthode connect du composant io(chargé de socket) pour nous connecter au serveur.*/
 
     var socket = io.connect('http://localhost:1337');
-    console.log(io);
 
     /** A l'aide de jquery on va recupérer les elements pseudo et email de l'user **/
 
 
-    $('#loginform').submit(function(event){
+    $('#login-form').submit(function(event){
+
         event.preventDefault(); //empecher l'utilisateur de soumettre le formulaire
 
         /**
@@ -39,10 +33,10 @@
 
         socket.emit('login', {  // on emet un event de type loginEvent + les paramètres (pseudo+mail)
             pseudo:$('#pseudo').val(),  // on récupere la valeur du cham pseudo, puis
-            adressemail:$('#adressemail').val() // celle du champ adressemail
+            email:$('#email').val() // celle du champ adressemail
         });
 
-        socket.emit('try', { val:"cocou"});
+
     });
 
 })(jQuery);
