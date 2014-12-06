@@ -9,60 +9,74 @@
     <link rel="stylesheet" href="frontend/css/bootstrap.css">
     <link rel="stylesheet" href="frontend/css/bootstrap.min.css">
     <!-- JS scripts -->
-    <script type="javascript" src="frontend/js/jquery-1.10.1.min.js"></script>
-    <script type="javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
-
-    <!-- il faut égalemment importer le script qui se charge du traitement du côté client, i-e client.js-->
-    <script type="javascript" src="backend/client/client.js"></script>
-
-
-
 </head>
 <body>
-
     <!-- HEADER-->
-
-    <div class="navbar" role="navigation">
+    <div class="navbar navbar-header nav-justified" role="navigation">
         <div class="container " >
             <div class="navbar-header">
-                <h3>Application de messagerie instantanée</h3>
-                <h3> Houssam KOURDACHE |  Baptiste TRAIN</h3>
+
             </div>
         </div>
     </div>
-
     <!-- BODY-->
-
     <div class="container container-fluid">
-        <ul>
-           <li>	Pour la création du serveur d’application, on a utilisé Node.JS</li>
-            <li>Pour mettre en place une application communiquant en temps réel, on a eus recours à la librairie Socket.IO.</li>
-                Socket.IO permet de faire la liaison entre vous et les autres personnes connectées
-                sur l’application Web, le tout en temps réel.</li>
-            <li>Editeur web : WebStorm.</li>
-            <li>Le Framework css de grille utilisé est : 34Grid (34grid.com)</li>
-        </ul>
-        <hr>
-        </br></br>
-
-        <!-- division to add new user -->
-
-        <div class="panel panel-success">
-            <div class="panel-heading"><h3>Se connecter en tant qu'un nouveau utilisateur</h3></div>
-            <div class="panel-body">
-                <input/>
-                <button></button>
+        <div class="row">
+            <!-- Colonne gauche -->
+            <div class="col-md-6">
+                <div class="panel panel-success">
+                    <div class="panel-heading text-center">
+                        <h3>Application de messagerie instantanée</h3>
+                        <h3> Houssam KOURDACHE |  Baptiste TRAIN</h3>
+                    </div>
+                    <div class="panel-body text-important">
+                        <ul>
+                           <li>	Pour la création du serveur d’application, on a utilisé Node.JS</li>
+                            <li>Pour mettre en place une application communiquant en temps réel, on a eus recours à la librairie Socket.IO.</li>
+                                Socket.IO permet de faire la liaison entre vous et les autres personnes connectées
+                                sur l’application Web, le tout en temps réel.</li>
+                            <li>Editeur web : WebStorm.</li>
+                            <li>Le Framework css de grille utilisé est : 34Grid (34grid.com)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <!-- colonne droite -->
+            <!-- division to add new user -->
+            <div class="col-md-6">
+                <div class="panel panel-success">
+                    <div class="panel-heading text-center"><h3>Nouveau Utilisateur</h3></div>
+                    <div class="panel-body">
+                        <form id="loginform" class="form-horizontal" method="post">
+                            <div class="form-group">
+                                <div class="col-md-10 col-md-offset-1">
+                                    <input id="pseudo" name="pseudo" type="text" placeholder="pseudo" class="form-control">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-md-10 col-md-offset-1">
+                                    <input id="adressemail" name="adressemail" type="text" placeholder="Adresse mail" class="form-control">
+                                </div>
+                            </div>
+                        </form>
+                        <div class="form-group">
+                            <div class="col-md-12 text-center">
+                                <input type="submit" value="Envoyer" class="btn btn-primary btn-lg"/>
+                                <input  type="reset" value="Annuler" class="btn btn-primary btn-lg"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-
     </div>
 
-
-
-
+    <!-- il faut égalemment importer le script qui se charge du traitement du côté client, i-e client.js-->
+    <script  src="backend/client/client.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <!-- chargement du script socket io : quand le serveur est démarré toutes
      les librairies sont accessibles en tapant le bon chemin dans l'url-->
-    <script type="javascript" src="http://localhost:2222/socket.io/socket.io.js"></script>
+    <script src="http://localhost:1337/socket.io/socket.io.js"></script>
 
 </body>
 </html>
