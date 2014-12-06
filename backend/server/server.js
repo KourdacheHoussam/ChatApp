@@ -6,10 +6,11 @@
  * méthode require()
  */
 
-var http, httpServer, socket_io;
+var http, httpServer, socket_io, md5;
 
 http = require('http');
 socket_io=require('../../libs/node_modules/socket.io');
+md5=require("MD5");
 
 /**
  * Dans ce qui suit , on va créer un serveur, qui prends une fonction en paramètre
@@ -25,3 +26,11 @@ httpServer=http.createServer(function(req, rep){
  */
 var port=2222;
 httpServer.listen(port);
+
+
+/** maintenant on va écouter les connections/communication qui se font
+ * via notre serveur node.js à l'aide de la socket socket_io */
+
+socket_io.listen(httpServer);
+
+
