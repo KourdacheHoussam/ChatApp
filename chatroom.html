@@ -3,22 +3,21 @@
 <head lang="en">
     <meta charset="UTF-8">
     <title>Chat Application</title>
+    <!-- JS scripts   -->
+    <script src="https://cdn.socket.io/socket.io-1.0.0.js"></script>
+    <script type="text/javascript"  src="http://localhost:1337/socket.io/socket.io.js"></script>
+    <!-- chargement du script socket io : quand le serveur est démarré toutes
+     les librairies sont accessibles en tapant le bon chemin dans l'url-->
+    <script type="text/javascript"  src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <!-- il faut égalemment importer le script qui se charge du traitement du côté client, i-e client.js-->
+    <script type="text/javascript" src="backend/client/client.js"></script>
     <!-- CSS imports-->
     <link rel="stylesheet" href="frontend/css/34gs-queries.css">
     <link rel="stylesheet"  href="frontend/css/34gs.css">
     <link rel="stylesheet" href="frontend/css/bootstrap.css">
     <link rel="stylesheet" href="frontend/css/bootstrap.min.css">
-    <!-- JS scripts -->
-    <script src="frontend/js/jquery-1.10.1.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-    <!-- chargement du script socket io : quand le serveur est démarré toutes
-     les librairies sont accessibles en tapant le bon chemin dans l'url-->
-    <script src="http://localhost:1337/socket.io/socket.io.js"></script>
-    <!-- il faut égalemment importer le script qui se charge du traitement du côté client, i-e client.js-->
-    <script  src="backend/client/client.js"></script>
 </head>
 <body>
-
 
 <!-- HEADER-->
 <div class="navbar navbar-header nav-justified" role="navigation">
@@ -35,7 +34,7 @@
             <div class="panel panel-success">
                 <div class="panel-heading">Liste utilisateurs</div>
                 <div class="panel-body" id="liste-utilisateurs">
-                    Liste ici
+
                 </div>
             </div>
         </div>
@@ -67,7 +66,7 @@
     <div class="container ">
         <div class="form-group">
             <div class="col-md-10 col-md-pull-0 ">
-                <textarea class="form-control" id="message" name="message" placeholder="Votre message" rows="1" aria-disabled="true"></textarea>
+                <textarea style="padding-left: 20px" class="form-control" id="message" name="message" placeholder="Votre message" rows="1" aria-disabled="true"></textarea>
             </div>
         </div>
         <input type="submit" value="Envoyer" class="btn btn-primary btn-group-lg"/>
