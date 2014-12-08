@@ -5801,7 +5801,7 @@ a.list-group-item-danger.active, a.list-group-item-danger.active:hover,
 	margin-bottom: 20px;
 	background-color: #2C3E50;
 	border: 1px solid transparent;
-	border-radius: 1px;
+	border-radius: 0px;
 	-webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, .05);
 	box-shadow: 0 1px 1px rgba(0, 0, 0, .05);
 }
@@ -5814,8 +5814,8 @@ a.list-group-item-danger.active, a.list-group-item-danger.active:hover,
 .panel-heading {
 	padding: 10px 15px;
 	border-bottom: 1px solid transparent;
-	border-top-left-radius: 3px;
-	border-top-right-radius: 3px;
+	border-top-left-radius: 0px;
+	border-top-right-radius: 0px;
 }
 
 .panel-heading>.dropdown .dropdown-toggle {
@@ -7137,7 +7137,7 @@ button.close {
 
 .footer {
   position: relative;
-  min-height: 120px;
+  min-height: 100px;
   bottom: 0;
   width: 100%;
   /* Set the fixed height of the footer here */
