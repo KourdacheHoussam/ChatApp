@@ -11,6 +11,8 @@
     <script src="node_modules/socket.io/socket.io.js"></script>
     <!-- template d'injection : handlebars(or mustache)-->
     <script src="backend/js/mustache.js" type="application/javascript"></script>
+    <script src="frontend/js/bootstrap.js" type="application/javascript"></script>
+    <script src="frontend/js/bootstrap.min.js" type="application/javascript"></script>
     <!-- CSS imports-->
     <link rel="stylesheet" href="frontend/css/34gs-queries.css">
     <link rel="stylesheet"  href="frontend/css/34gs.css">
@@ -144,10 +146,27 @@
     <div class="footer" style="position: relative; padding: 20px 20px 20px 10px">
         <div class="container ">
              <form action="" id="send-msg-form">
-                <div class="col-md-11 col-md-pull-0 ">
-                    <textarea style="padding-left: 20px" class="form-control" id="message_content" name="message_content" placeholder="Votre message" rows="1"></textarea>
-                </div>
-                <input type="submit" value="Envoyer" class="btn btn-primary btn-group-lg"/>
+                 <div class="row">
+                     <div class="col-md-1">
+                         <div class="btn-group btn-group-vertical" data-toggle="buttons">
+                             <label class="btn btn-primary ">
+                                 <input type="radio" id="polling-mode" name="mode[1]" value="Polling" /> Polling
+                             </label>
+                             <label class="btn btn-primary">
+                                 <input type="radio" id="long-polling-mode" name="mode[2]" value="Long-polling" /> Long-polling
+                             </label>
+                             <label class="btn btn-primary">
+                                 <input type="radio" id="push-mode" name="mode[3]" value="Push" /> Push
+                             </label>
+                         </div>
+                     </div>
+                     <div class="col-md-11">
+                         <div class="col-md-11 col-md-pull-0 ">
+                            <textarea style="padding-left: 20px" class="form-control" id="message_content" name="message_content" placeholder="Votre message" rows="1"></textarea>
+                         </div>
+                         <input type="submit" value="Envoyer" class="btn btn-primary btn-group-lg"/>
+                     </div>
+                 </div>
               </form>
         </div>
     </div>

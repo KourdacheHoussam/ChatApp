@@ -14,11 +14,11 @@ app=require('express')();
 var list_users={}; //user list container
 var list_messages=[]; //cache message
 var history_limit=30; //limit taille list_messages
-var date=new Date();
-
+var date;
 /** Dans ce qui suit , on va créer un serveur, qui prends une fonction en paramètre
  * recevant la requête envoyée et la réponse à renvoyer à l'utilisateur*/
 http_server=require('http').Server(app);
+
 io=require('socket.io')(http_server);
 app.get('/', function(req, rep){
     rep.sendFile(path.resolve('../../index.html'));
@@ -47,6 +47,7 @@ io.sockets.on('connection', function(socket){    /** socket = socket utilisateur
     /** Message reçu */
     socket.on('new-message-coming', function(message){
         message.user=current_user;
+        date=new Date();
         message.hour=date.getHours();
         message.minutes=date.getMinutes();
         //sauvegarder le message
@@ -68,6 +69,7 @@ io.sockets.on('connection', function(socket){    /** socket = socket utilisateur
     /** ---LOGIN---- Dans cette partie on reçoit les évènement prevenant du côté client  **/
     socket.on('login', function(user){  // A la réception de loginEvent, j'envoi une fonction de CallBack
         /**  enregistrer les proprietes du client*/
+        date=new Date();
         current_user=user;
         current_user.id=user.mail.replace('@', '-').replace('.', '-');
         current_user.avatar='http://robohash.org/'+  md5.digest_s(user.mail) +'/arfset_bg1/3.14159?size=60x60';
