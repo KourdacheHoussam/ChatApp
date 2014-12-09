@@ -14,6 +14,7 @@ app=require('express')();
 var list_users={}; //user list container
 var list_messages=[]; //cache message
 var history_limit=30; //limit taille list_messages
+var date=new Date();
 
 /** Dans ce qui suit , on va créer un serveur, qui prends une fonction en paramètre
  * recevant la requête envoyée et la réponse à renvoyer à l'utilisateur*/
@@ -46,7 +47,6 @@ io.sockets.on('connection', function(socket){    /** socket = socket utilisateur
     /** Message reçu */
     socket.on('new-message-coming', function(message){
         message.user=current_user;
-        var date=new Date();
         message.hour=date.getHours();
         message.minutes=date.getMinutes();
         //sauvegarder le message
@@ -56,6 +56,7 @@ io.sockets.on('connection', function(socket){    /** socket = socket utilisateur
         }
         //Renvoyer le message à tous les utilisateurs
         io.sockets.emit('new-message-coming', message);
+        console.log('L id : '+message.user.id);
     });
 
     /**
@@ -70,7 +71,8 @@ io.sockets.on('connection', function(socket){    /** socket = socket utilisateur
         current_user=user;
         current_user.id=user.mail.replace('@', '-').replace('.', '-');
         current_user.avatar='http://robohash.org/'+  md5.digest_s(user.mail) +'/arfset_bg1/3.14159?size=60x60';
-
+        current_user.connectionhour=date.getHours();
+        current_user.connectionminutes=date.getMinutes();
         /** prévenir l'utilisateur et tous les autrees que le new client est enregistre*/
         io.sockets.emit("new-user-created", current_user);
 
@@ -92,7 +94,6 @@ io.sockets.on('connection', function(socket){    /** socket = socket utilisateur
         //prevenir les autres users
         io.sockets.emit('user-disconnected', current_user);
     });
-
 });
 
 /** ecoute des sockets sur le port 3000 du serveur */

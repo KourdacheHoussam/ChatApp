@@ -10,6 +10,7 @@
      * on appelle la méthode connect du composant io(chargé de socket) pour nous connecter au serveur.*/
     var socket=io('http://localhost:3000/');
 
+    var Me;
 
      /**
      * -----------------------------------------------------------------------------------------------------------
@@ -19,6 +20,9 @@
 
      var message_template=$('#message_tpl').html(); //recuperer la div où s'affiche les msg
      $('#message_tpl').remove();//puis la supprimer
+
+     var message_template_left=$('#message_tpl_left').html();// recuperer la div ou s'affiche les msg gauches
+    $('#message_tpl_right').remove();//puis le supprimer
 
      /** Quand j'envoie un message*/
      $('#send-msg-form').submit(function(event){
@@ -33,9 +37,18 @@
 
      /** Quand je recois un message*/
      socket.on('new-message-coming', function(message){
-         //on injecte le contenu message dans le template message_tmpl
-         $('#listmessages').append('<div class="message">' + Mustache.render(message_template, message) + '</div>');
-         $('#listmessages').animate({scrollTop: $('#message_tpl').offset().top }, 1000);
+         if(message.user.id != Me.id){
+             //on injecte le contenu message dans le template message_tmpl
+             $('#listmessages').append('<div class="message-right" style="margin-bottom:-45px; ">'
+                 + Mustache.render(message_template, message) +
+                 '</div>');
+         }
+         if(message.user.id == Me.id){
+             $('#listmessages').append('<div class="message-left" style="margin-bottom:-45px; ">'
+                 + Mustache.render(message_template_left, message) + '</div>');
+         }
+         $('#listmessages-right').animate({scrollTop: $('#message_tpl').offset().top }, 1000);
+         $('#listmessages-right_left').animate({scrollTop: $('#message_tpl_right').offset().top }, 1000);
      });
 
 
@@ -50,6 +63,9 @@
     $('#loginform').submit(function(event){
         console.log("inside submit method #client");
         event.preventDefault(); //empecher l'utilisateur de soumettre le formulaire
+        // scroller vers la section messagerie
+        goToByScroll("messagerielink");
+
         /**
          * puis émettre un évènement à la socket
          * on spécifiant le nom de l'évènement que l'on veut
@@ -59,6 +75,7 @@
                 username : $('#username').val(),
                 mail 	 : $('#mail').val()
         })
+
         //on vide les champs
         $('#username').val('');
         $('#username').focus();
@@ -77,8 +94,12 @@
 
     /** Vérifier que l'user est bien crée on écoutant l'evement provenant du serveur (new-user-created)*/
     socket.on('new-user-created', function(created_user){
-        $('#liste-utilisateurs').append('<img src="' + created_user.avatar + '" id="' + created_user.id + '">');
-        $('#liste-utilisateurs').append('<br/>');
+        Me=created_user;
+        $('#liste-utilisateurs').append('<li class="list-group-item" style="background-color: transparent;border-width:0.03cm;"><img src="' +
+            created_user.avatar + '" id="' + created_user.id + ' " > '+ created_user.username+'<span class="badge text-center pull-right">'+
+            created_user.connectionhour +':'+created_user.connectionminutes+'</span></li>');
+
+
     });
 
 
@@ -92,3 +113,13 @@
 
     }
  )(jQuery);//END SCRIPT
+
+
+function goToByScroll(id){
+    // Reove "link" from the ID
+    id = id.replace("link", "");
+    // Scroll
+    $('html,body').animate({
+            scrollTop: $("#"+id).offset().top},
+        'fast');
+}
