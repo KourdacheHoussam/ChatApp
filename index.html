@@ -80,7 +80,7 @@
         </div>
     </div>
 </div>
-<!-- *********************************************  -->
+<!--    -------------------------------------------------------------------------------------------------------    -->
 <div id="messagerie"  >
     <div class="container " style="margin-bottom:40px; padding-bottom: 60px;">
         <div class="row">
@@ -147,24 +147,39 @@
         <div class="container ">
              <form action="" id="send-msg-form">
                  <div class="row">
-                     <div class="col-md-1">
+                     <!-- ***** Division pour choisir le mode de communication ******** -->
+                     <div class="col-md-2">
                          <div class="btn-group btn-group-vertical" data-toggle="buttons">
                              <label class="btn btn-primary ">
-                                 <input type="radio" id="polling-mode" name="mode[1]" value="Polling" /> Polling
+                                 <input type="radio" id="polling-mode" name="modecom" value="Polling" checked="checked"/> Polling
                              </label>
                              <label class="btn btn-primary">
-                                 <input type="radio" id="long-polling-mode" name="mode[2]" value="Long-polling" /> Long-polling
+                                 <input type="radio" id="long-polling-mode" name="modecom" value="Long-polling" /> Long-polling
                              </label>
                              <label class="btn btn-primary">
-                                 <input type="radio" id="push-mode" name="mode[3]" value="Push" /> Push
+                                 <input type="radio" id="push-mode" name="modecom" value="Push" /> Push
                              </label>
                          </div>
                      </div>
-                     <div class="col-md-11">
-                         <div class="col-md-11 col-md-pull-0 ">
+                     <!-- ****** Division pour envoyer le message-->
+                     <div class="col-md-8">
+                         <div class="col-md-9 col-md-0 ">
                             <textarea style="padding-left: 20px" class="form-control" id="message_content" name="message_content" placeholder="Votre message" rows="1"></textarea>
                          </div>
                          <input type="submit" value="Envoyer" class="btn btn-primary btn-group-lg"/>
+                     </div>
+                     <!-- ****** Division : button quitter chat & les deux bouttons qui permettent d'afficher ou pas le fil de
+                     de la discussion, c'est-a-dire les anciens messages echangés avant son arrivée sur le chat   ***********-->
+                     <div class="col-md-2 text-center">
+                         <button id="quitter" class="btn btn-success">      Quitter       <i class="icon-off"></i></button>
+                         <div class="btn-group btn-group-vertical" data-toggle="buttons">
+                             <label class="btn btn-danger  ">
+                                 <input type="radio" id="suivre-file-disc" name="file_msg" value="avec-fil" /> Suivre le fil du chat
+                             </label>
+                             <label class="btn btn-danger">
+                                 <input type="radio" id="ne-suivre-file-disc" name="file_msg" value="sans-fil" /> Actuels Messages
+                             </label>
+                         </div>
                      </div>
                  </div>
               </form>

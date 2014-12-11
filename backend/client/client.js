@@ -4,7 +4,25 @@
 * Remarque : ici on utilise JQUERY
 */
 
+/** Document Pret*/
 (function($) {
+
+
+
+    var mode_communication='', voir_anciens_msg='', button_quitter=false;
+    $('#send-msg-form').on('change', function(){
+        // Mode Communication Var
+        mode_communication= jQuery( 'input[name="modecom"]:checked' ).val();
+        // Voir ou pas les anciens messages du chat
+        voir_anciens_msg=jQuery('input[name="file_msg"]:checked').val();
+
+    });
+    // Le button Quitter cliqué
+    $('#quitter').click(function(){
+        button_quitter=true;
+        alert(button_quitter);
+    });
+
 
     /** io utilisé ci-dessous est chargé automatiquement via le JS intégré dans index.html
      * on appelle la méthode connect du composant io(chargé de socket) pour nous connecter au serveur.*/

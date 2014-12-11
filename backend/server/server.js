@@ -49,6 +49,7 @@ io.sockets.on('connection', function(socket){    /** socket = socket utilisateur
         message.user=current_user;
         date=new Date();
         message.hour=date.getHours();
+
         message.minutes=date.getMinutes();
         //sauvegarder le message
         list_messages.push(message);
