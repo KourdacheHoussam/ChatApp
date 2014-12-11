@@ -9,7 +9,7 @@
 
 var port=3000;  //Port de COM
 var md5 = require('md5');   //
-var io, app, http_server, path, express, util, url, date, queryString;
+var io, app, http_server, path, express, util, url, date, queryString, current_user;
 express=require('express');
 path=require('path');
 app=require('express')();
@@ -38,18 +38,47 @@ io=require('socket.io')(http_server);
             saveMessageDB(msg);
         }
         //now, on envoit le nouveau message à tous les clients
-        while(clients_en_attente.length>0){
-            var client=clients_en_attente.pop(); // on enleve de la liste
-            client.writeHead(200, {'Content-Type': 'application/json', "Access-Control-Allow-Origin":"*" });
-            client.end(JSON.stringify({			 // on lui envoie le message
-                count:list_messages.length,
-                append:req.query.message
-            }));
+        while (clients_en_attente.length > 0) {
+                var client = clients_en_attente.pop(); // on enleve de la liste
+                client.writeHead(200, {'Content-Type': 'application/json', "Access-Control-Allow-Origin": "*" });
+                client.end(JSON.stringify({			 // on lui envoie le message
+                    user: msg.user,
+                    message: msg
+                }));
         }
+        console.log("msg envoyé "+msg);
         rep.writeHead(200, {'Content-Type': 'application/json', "Access-Control-Allow-Origin":"*" });
         rep.write(JSON.stringify(msg)); //faut absolument le garder pour que ça marche
         rep.end();
  });
+
+
+/** ---------------------------------------------------------------------------------------------------------
+ * ---------------------- QUAND ON APPELE URL(/newuser) : localhost:port/newuser ----------------------
+ * ----------------------------------------------------------------------------------------------------------*/
+
+//ajout d'un nouveau utilisateur en mode longpolling
+app.get('/newuser', function(req, rep){
+
+    console.log("je suis dans newuser");
+    date=new Date();
+    var objet= JSON.stringify(req.query);
+    var json=JSON.parse(objet);
+    var username=json.username;
+    var email=json.email;
+    var new_user={};
+    new_user.username=username;
+    new_user.email=email;
+    new_user.id=email.replace('@', '-').replace('.', '-');
+    new_user.avatar='http://robohash.org/'+  md5.digest_s(new_user.email) +'/arfset_bg1/3.14159?size=60x60';
+    new_user.heure=date.getHours();
+    new_user.minutes=date.getMinutes();
+    list_users[new_user.id]=new_user;
+    current_user=new_user;
+    console.log(JSON.stringify(new_user));
+    rep.end();
+
+});
 /** ---------------------------------------------------------------------------------------------------------
  * ---------------------- QUAND ON APPELE URL(/addmessage) : localhost:port/addmessage ----------------------
  * ----------------------------------------------------------------------------------------------------------*/
@@ -124,14 +153,33 @@ io=require('socket.io')(http_server);
 
 
 /** ----------------------------------------------------------------------------------------------------------
- * -------------- QUAND ON APPELE URL(/longpolling) : localhost:port/  => POLLING ----------------------------
+ * -------------- QUAND ON APPELE URL(/polling) : localhost:port/  => POLLING ----------------------------
  * -----------------------------------------------------------------------------------------------------------*/
+app.get('/pollingusers', function(req, rep){
+    date=new Date();
+    var heure=date.getHours();
+    var minutes=date.getMinutes();
+    var secondes=date.getSeconds();
+    var new_users=[];
+    if(list_users.length > 0){
+        for(var i=0; i<list_users.length; i++){
+            if(list_users[i]["connectionhour"]>heure && list_users[i]["connectionminutes"]>minutes ){
+                new_users.push(list_users[i]);
+            }
+        }
+    }
+    rep.writeHead(200, {'Content-Type': 'application/json', "Access-Control-Allow-Origin":"*" });
+    rep.write(JSON.stringify(new_users)); //faut absolument le garder pour que ça marche
+    rep.end();
+    new_users=null;
+});
+
 app.get('/polling', function(req, rep){
     console.log("je suis dans le polling a la seconde : ");
     //on récupere la date d'arrivee dans le chat
     var objet= JSON.stringify(req.query);
-    var json= JSON.parse(objet);
-    var heure= json.heure;
+
+    var heure= json.heure;  var json= JSON.parse(objet);
     var minutes= json.minutes;
     var secondes= json.secondes;
     console.log("Heure : "+heure+" min: "+minutes + " sec: "+secondes);
@@ -161,15 +209,11 @@ app.get('/polling', function(req, rep){
  * ----------------------- QUAND ON APPELE URL(/) : localhost:port/ -------------------------------------------
  * -----------------------------------------------------------------------------------------------------------*/
 app.get('/', function(req, rep){
-    rep.sendFile(path.resolve('../../index.html'));
-    console.log("Je suis dans /")
-    var path = url.parse(req.url).pathname;
-    var mode_communication=req.query.modecommunication;
+    console.log("Je suis dans le /");
 });
-/** maintenant on va écouter les connections/communication qui se font
- * via notre serveur node.js à l'aide de la socket socket_io */
 
 io.sockets.on('connection', function(socket){    /** socket = socket utilisateur en cours*/
+    console.log("Je suis dans io.sockets.on() /");
     var current_user=false;
     /** afficher tout les utilisateurs dans la liste*/
     for(var user in list_users){
@@ -187,6 +231,7 @@ io.sockets.on('connection', function(socket){    /** socket = socket utilisateur
         date=new Date();
         message.hour=date.getHours();
         message.minutes=date.getMinutes();
+        message.seconds=date.getSeconds();
         //sauvegarder le message
         list_messages.push(message);
         if(list_messages.length>history_limit){
@@ -201,13 +246,14 @@ io.sockets.on('connection', function(socket){    /** socket = socket utilisateur
 
     /** ---LOGIN---- Dans cette partie on reçoit les évènement prevenant du côté client  **/
     socket.on('login', function(user){  // A la réception de loginEvent, j'envoi une fonction de CallBack
-        /**  enregistrer les proprietes du client*/
+        console.log("Je suis dans io.socket.on('login') /");
+        //  enregistrer les proprietes du client
         date=new Date();
         current_user=user;
         current_user.id=user.mail.replace('@', '-').replace('.', '-');
         current_user.avatar='http://robohash.org/'+  md5.digest_s(user.mail) +'/arfset_bg1/3.14159?size=60x60';
-        current_user.connectionhour=date.getHours();
-        current_user.connectionminutes=date.getMinutes();
+        current_user.heure=date.getHours();
+        current_user.minutes=date.getMinutes();
         /** prévenir l'utilisateur et tous les autrees que le new client est enregistre*/
         io.sockets.emit("new-user-created", current_user);
 
@@ -224,12 +270,15 @@ io.sockets.on('connection', function(socket){    /** socket = socket utilisateur
      * ----QUIT---- Quand l'user quitte le chat, on le supprime de la liste
      */
     socket.on('disconnect', function(){
+        console.log("Disconnected");
         if(!current_user){   return false;  }
         delete list_users[current_user.id];
         //prevenir les autres users
         io.sockets.emit('user-disconnected', current_user);
+
     });
 });
+
 
 /** ----------------------------------------------------------------------------------------------------------
  * -------------------------------------------- FONCTIONS COMMUNES -------------------------------------------
@@ -238,6 +287,8 @@ io.sockets.on('connection', function(socket){    /** socket = socket utilisateur
 function saveMessageDB(message){
     date=new Date();
     var currentmessage=new Object();
+    if(current_user==null){currentmessage['user']="";}
+    else{currentmessage['user']=current_user;}
     currentmessage['message']=message;
     currentmessage['hour']=date.getHours();
     currentmessage['minutes']=date.getMinutes();
