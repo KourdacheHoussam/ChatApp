@@ -80,6 +80,8 @@
                 </div>
             </div>
         </div>
+        <div id="user_disconnected">
+        </div>
     </div>
 </div>
 <!--    -------------------------------------------------------------------------------------------------------    -->
@@ -97,6 +99,7 @@
                         </ul>
                     </div>
                 </div>
+
             </div>
             <!-- MESSAGES CONTAINER -->
             <div class="col-md-8 text-center" id="message_container">
@@ -121,8 +124,11 @@
                                          </div>
                                      </div>
                                 </div>
-                                <div id="fuck">
-
+                                <div id="longpolling-messages">
+                                        <!--ICI AFFICHE MESSAGES-->
+                                </div>
+                                <div id="polling-messages">
+                                    <!--ICI AFFICHE MESSAGES-->
                                 </div>
                                 <div class="message-left"  class="col-md-12"
                                      id="message_tpl_left" style="display: none; background-color:#5e5e5e;" >
@@ -149,7 +155,6 @@
     <!-- form : send message-->
     <div class="footer" style="position: relative; padding: 20px 20px 20px 10px">
         <div class="container ">
-
                  <div class="row">
                      <!-- ***** Division pour choisir le mode de communication ******** -->
                      <div class="col-md-2">
@@ -168,24 +173,17 @@
                      <!-- ****** Division pour envoyer le message-->
                      <div class="col-md-8">
                          <form action="" id="send-msg-form">
-                         <div class="col-md-9 col-md-0 ">
-                            <textarea style="padding-left: 20px" class="form-control" id="message_content" name="message_content" placeholder="Votre message" rows="1"></textarea>
-                         </div>
-                         <input type="submit" value="Envoyer" class="btn btn-primary btn-group-lg"/>
+                             <div class="col-md-9 col-md-0 ">
+                                <textarea style="padding-left: 20px" class="form-control" id="message_content" name="message_content" placeholder="Votre message" rows="1"></textarea>
+                             </div>
+                             <input type="submit" value="Envoyer" class="btn btn-primary btn-group-lg"/>
                          </form>
                      </div>
                      <!-- ****** Division : button quitter chat & les deux bouttons qui permettent d'afficher ou pas le fil de
                      de la discussion, c'est-a-dire les anciens messages echangés avant son arrivée sur le chat   ***********-->
                      <div class="col-md-2 text-center">
-                         <button id="quitter" class="btn btn-success">      Quitter       <i class="icon-off"></i></button>
-                         <div class="btn-group btn-group-vertical" data-toggle="buttons">
-                             <label class="btn btn-danger  ">
-                                 <input type="radio" id="suivre-file-disc" name="file_msg" value="avec-fil" /> Suivre le fil du chat
-                             </label>
-                             <label class="btn btn-danger">
-                                 <input type="radio" id="ne-suivre-file-disc" name="file_msg" value="sans-fil" /> Actuels Messages
-                             </label>
-                         </div>
+                         <button id="quitterlink" class="btn btn-success">      Quitter       <i class="icon-off"></i></button>
+
                      </div>
                  </div>
         </div>

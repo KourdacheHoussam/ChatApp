@@ -23,36 +23,6 @@
     var Me;
     var socket;//=io('http://localhost:3000/');
 
-
-    $('#send-msg-form').on('change', function(){
-        // Mode Communication Var
-        mode_communication= jQuery( 'input[name="modecom"]:checked' ).val();
-        // Voir ou pas les anciens messages du chat
-        previous_messages=jQuery('input[name="file_msg"]:checked').val();
-
-    });
-    // Le button Quitter cliqué
-    $('#quitter').click(function(){
-        alert("dans quit button");
-        var time;
-        button_quitter=true;
-        socket.emit('disconnect',{});
-        clearInterval(time);
-        setTimeout( function(){
-            socket.disconnect();
-        }, 2000 );
-        //longPolling();
-    });
-
-    //Si le mode précédent est push,, i-e mode par défaut
-    if(mode_communication_precedent=='Push'){ }
-
-    /** Quand j'envoie un message*/
-    $('#send-msg-form').submit(function(event) {
-        event.preventDefault();
-    });
-
-
     /** ----------------------------------------------------------------------------------------------------------
      *  -------------------------------------- FONCTIONS COMMUNES ------------------------------------------------
      *  ---------------------------------------------------------------------------------------------------------- */
@@ -75,7 +45,6 @@
                 alert("La communication avec ce mode n'est pas établie");
             }
         });
-
     };
     //fonction pour envoyer un nouveau message
     function sendNewMessage(message){
@@ -87,18 +56,11 @@
             //success est la méthode à faire tourner quand la requete aboutit
             complete: function(data, status, xhr){
                 if(status=="success"){
-                    var msg='';
-                    //var obj=$.parse(data);
-                    //list_messages=JSON.stringify(data);
-                    //var obj=JSON.parse(data);
-                    //alert(data.message);
                 }
             },
             fail:function(xhr, status){
-                alert("il y a une error");
+                alert("il y a une error !");
             }
-            // la méthode à appeler quand la requete est finie: quand on a reçu le callback success ou error.
-            //complete:
         });
         return false; //empecher le rafraichissement
     };
@@ -113,7 +75,7 @@
          success:function(){},
          complete:function(data, status, xhr){
              if(status=="success"){
-                 var msg='';
+                     alert('ok');
              }
          },
          fail:function(xhr, status){
@@ -125,20 +87,6 @@
     /** ----------------------------------------------------------------------------------------------------------
      *  -------------------------------------- GESTION DES BOUTONS -----------------------------------------------
      *  ---------------------------------------------------------------------------------------------------------- */
-    //Ajout user
-    $('#loginform').submit(function(event){
-        event.preventDefault(); //empecher l'utilisateur de soumettre le formulaire
-        // scroller vers la section messagerie
-        goToByScroll("messagerielink");
-        //envoyer requete vers serveurs
-        createNewuser($('#username').val(),$('#mail').val());
-        //on vide les champs
-        $('#username').val('');
-        $('#username').focus();
-        $('#mail').val('');
-        $('#mail').focus();
-    });
-
 
     // quand le formulaire est envoyé
     $('#send-msg-form').submit( function(){
@@ -187,7 +135,6 @@
         return false;
     }
     function polling(){
-        if(io!=null){  socket.emit('disconnect',{}); socket.disconnect(); }
         var time;
         $.ajax({
             url:'http://localhost:3000/polling/',
@@ -197,13 +144,28 @@
             success: function(data, status, xhr){
                 clearInterval(time);
                 if(status=="success"){
-                    time=setTimeout( function(){
-                        polling();
-                    }, 2000 );  // redemarre le polling au bout de 2 sec
                     var msg='';
                     list_messages=JSON.stringify(data);
-                    $('#liste-utilisateurs').append("<p>Votre message:   " + list_messages.toString()+"</p>");
-                }else{
+                    var json=JSON.parse(list_messages);
+                    $('#polling-messages').append("<p> "+ list_messages.toString()+"</p>");
+                    /*
+                    for(var i=0; i<list_messages.length; i++){
+                        var m=list_messages[i]["message"];
+                        var h=list_messages[i]["hour"];
+                        var min=list_messages[i]["minutes"];
+
+                            $('#polling-messages').append("<p>Message: " + m + "  Heure : " + h + ":" + min + "</p>");
+
+                    }*/
+                    //on injecte le contenu message dans le template message_tmpl
+                    //$('#polling-messages').append("Mes:"+list_messages.toString());
+                    //if(json.message !=null) {
+                     //   $('#polling-messages').append("<p>Message: " + json.message + "  Heure : " + json.hour + ":" + json.minutes + "</p>");
+                    //}
+                    time=setTimeout( function(){
+                        polling();
+                    }, 2000 );
+                }else if(data.status == 'error'){
                     alert(':( Please refresh the page!');
                 }
             },
@@ -211,14 +173,15 @@
                 clearInterval( time );
                 time = setTimeout( function(){
                     polling( );
-                }, 19000 );//on attend 15 scd
+                }, 19000 );//on attend 19 scd
             }
         });
         return false;
     };
-    // Appel à la fonction polling
-    polling();
-    //pollingUsers()
+    //------------------
+    //----- FAIRE FOCNTIONNER LE POLLING FAUT DECOMMENTER CETTE FONCTION
+    //------------------
+    //polling();
 
     /** -----------------------------------------------------------------------------------------------------------------
      ------------------------------------------------ SECTION LONG POLLING ----------------------------------------------
@@ -236,32 +199,22 @@
             data: { heure: date_hour, minutes:date_minutes, secondes:date_seconds },
             dataType: 'json',
             //SUCESS et ERROR sont deux call back renvoyées par le serveur
-            success: function( data, status, xhr ){  //Au cas du succes on verifie si on a des resultats
+            success: function( datalongpoll, status, xhr ){  //Au cas du succes on verifie si on a des resultats
                 clearInterval( time );
                 if( status == 'success' ){
+                    //var msg='';
+                    list_messages=JSON.stringify(datalongpoll);
+                    var json=JSON.parse(list_messages);
+                    //on injecte le contenu message dans le template message_tmpl
+                    $('#longpolling-messages').append("<p>Message LongP: " +json.message+" Heure : "+ json.hour+":"+json.minutes+"</p>");
                     // quand on reçoit des données, on refait une nouvelle requete
                     // aprés une seconde, en appelant
                     // la fonction longpolling
                     time=setTimeout( function(){
                         longPolling( );
-                    }, 1000 );
-                    var msg='';
-
-                    list_messages=JSON.stringify(data);
-                    //alert(list_messages);
-                    var json=JSON.parse(list_messages);
-
-                    // var message_template=$('#message_tpl').html(); //recuperer la div où s'affiche les msg
-                    //$('#message_tpl').remove();//puis la supprimer
-
-                    $('#fuck').append("<p>Message : " +json.message+" Heure : "+ json.hour+":"+json.minutes+"</p>");
-                    //on injecte le contenu message dans le template message_tmpl
-                    var message= {"hour":json.hour, "minutes":json.minutes, "message":json.message,"user.avatar":json.avatar ,"message.user.id":" dsdsd"};
-                    //$('#listmessages').append('<div class="message-right" style="margin-bottom:-45px; ">'
-                    //    + Mustache.render(message_template, message) +
-                    //    '</div>');
+                    }, 50 );
                 }
-                else if( data.status == 'error' ){
+                else if( datalongpoll.status == 'error' ){
                     alert('We got confused, Please refresh the page!');
                 }
             },
@@ -279,7 +232,10 @@
         });
         return false;
      }
-    // longPolling();
+    //------------------
+    //----- FAIRE FOCNTIONNER LE POLLING FAUT DECOMMENTER CETTE FONCTION
+    //------------------
+    //longPolling();
 
     /** --------------------------------------------------------------------------------------------------------------------
     *   -------------------------------------------------------- SECTION PUSH ----------------------------------------------
@@ -293,7 +249,6 @@
         /**---------------------- GESTION MESSAGERIE -------------------- */
         var message_template=$('#message_tpl').html(); //recuperer la div où s'affiche les msg
         $('#message_tpl').remove();//puis la supprimer
-
         var message_template_left=$('#message_tpl_left').html();// recuperer la div ou s'affiche les msg gauches
         $('#message_tpl_right').remove();//puis le supprimer
 
@@ -331,9 +286,7 @@
             event.preventDefault(); //empecher l'utilisateur de soumettre le formulaire
             // scroller vers la section messagerie
             goToByScroll("messagerielink");
-
-            /** puis émettre un évènement à la socket
-             * on spécifiant le nom de l'évènement que l'on veut
+            /** puis émettre un évènement à la socket on spécifiant le nom de l'évènement que l'on veut
              * Notre premiere evenement est le : LOGIN : envoi d'un event login au serveur
              */
             socket.emit('login', {
@@ -357,17 +310,26 @@
             $('#liste-utilisateurs').append('<li id="'+created_user.id+'" class="list-group-item" ' +
                 'style="background-color: transparent;border-width:0.03cm;">' +
                 '<img src="'+ created_user.avatar +'">'+ created_user.username+'<span class="badge text-center pull-right">'+
-                created_user.connectionhour +':'+created_user.connectionminutes+'</span></li>');
+                created_user.heure+':'+created_user.minutes+'</span></li>');
         });
         /** on regarde qui se déconnecte */
         socket.on('user-disconnected', function(user){
-            $("#" + user.id).remove();
+            $('#user_disconnected').append('<h3> L\'utilisateur :'+ user.username+' a quitté le chat.</ph3>');
+            $("#" + user.id).remove().fadeOut();
             socket.disconnect();
-            alert("disconnected");
+        });
+        // Le button Quitter cliqué
+        $('#quitterlink').click(function(){
+            alert("quit");
+            button_quitter=true;
+            socket.emit('disconnect',{});
         });
     };
 
-    //Push();
+    //------------------
+    //----- FAIRE FOCNTIONNER LE POLLING FAUT DECOMMENTER CETTE FONCTION
+    //------------------
+    Push();
 
 
 } //ENF OF MAIN FUNCTION
@@ -375,10 +337,6 @@
 
 
 function goToByScroll(id){
-    // Remove "link" from the ID
-    id = id.replace("link", "");
-    // Scroll
-    $('html,body').animate({
-            scrollTop: $("#"+id).first().offset().top},
-        'fast');
+    id = id.replace("link", "");   // Remove "link" from the ID
+    $('html,body').animate({ scrollTop: $("#"+id).first().offset().top},'fast'); // Scroll
 }

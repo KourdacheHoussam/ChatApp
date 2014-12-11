@@ -21,6 +21,7 @@ var list_messages=[]; //cache message
 var history_limit=30; //limit taille list_messages
 var date;
 var clients_en_attente=[];
+var queue_messages={}; //stocket tous les messages tombés pendant le timeout fait côté client
 //Créer un serveur avec une fonction en param  recevant la
 //requête envoyée et la réponse à renvoyer à l'utilisateur
 http_server=require('http').Server(app);
@@ -31,7 +32,6 @@ io=require('socket.io')(http_server);
  * ----------------------------------------------------------------------------------------------------------*/
  // Reception d'un nouveau message à enregistrer
  app.get('/addmessage', function(req, rep){
-        console.log("Je suis dans addmessage")
         var msg=req.query.message;
         date=new Date();
         var avatar='http://robohash.org/'+  md5.digest_s(date.getHours()) +'/arfset_bg1/3.14159?size=60x60';
@@ -39,11 +39,12 @@ io=require('socket.io')(http_server);
         if(req.query.message != null){
             saveMessageDB(msg);
         }
-        //now, on envoit le nouveau message à tous les clients
+        // NE SERA EXECUTEE QUE DANS LE MODE POLLING /
+        // S'il y a des clients qui attendent, on leurs envoit le message
         while (clients_en_attente.length > 0) {
-                var client = clients_en_attente.pop(); // on enleve de la liste
+                var client = clients_en_attente.pop(); // je l'enleve de la liste
                 client.writeHead(200, {'Content-Type': 'application/json', "Access-Control-Allow-Origin": "*" });
-                client.end(JSON.stringify({			 // on lui envoie le message
+                client.end(JSON.stringify({			 // puis, je lui envoie le message
                     user: msg.user,
                     message: msg,
                     hour:date.getHours(),
@@ -53,7 +54,7 @@ io=require('socket.io')(http_server);
         }
         console.log("msg envoyé "+msg);
         rep.writeHead(200, {'Content-Type': 'application/json', "Access-Control-Allow-Origin":"*" });
-        rep.write(JSON.stringify({			 // on lui envoie le message
+        rep.write(JSON.stringify({			 // je lui envoie le message
             user: msg.user,
             message: msg,
             hour:date.getHours(),
@@ -168,11 +169,11 @@ app.get('/newuser', function(req, rep){
  * -------------- QUAND ON APPELE URL(/polling) : localhost:port/  => POLLING ----------------------------
  * -----------------------------------------------------------------------------------------------------------*/
 app.get('/pollingusers', function(req, rep){
+    var new_users=[];
     date=new Date();
     var heure=date.getHours();
     var minutes=date.getMinutes();
     var secondes=date.getSeconds();
-    var new_users=[];
     if(list_users.length > 0){
         for(var i=0; i<list_users.length; i++){
             if(list_users[i]["connectionhour"]>heure && list_users[i]["connectionminutes"]>minutes ){
@@ -190,10 +191,10 @@ app.get('/polling', function(req, rep){
     console.log("je suis dans le polling a la seconde : ");
     //on récupere la date d'arrivee dans le chat
     var objet= JSON.stringify(req.query);
-
-    var heure= json.heure;  var json= JSON.parse(objet);
-    var minutes= json.minutes;
-    var secondes= json.secondes;
+    var json=JSON.parse(objet);
+    var heure=json.heure;
+    var minutes=json.minutes;
+    var secondes=json.secondes;
     console.log("Heure : "+heure+" min: "+minutes + " sec: "+secondes);
     // on crée un tableau pour enregistrer les nouveau messages par rapport à
     // l'utilisateur connecté
@@ -216,28 +217,30 @@ app.get('/polling', function(req, rep){
     rep.end();
 });
 
-
- /** ----------------------------------------------------------------------------------------------------------
- * ----------------------- QUAND ON APPELE URL(/) : localhost:port/ -------------------------------------------
+/** ----------------------------------------------------------------------------------------------------------
+ * ----------------------- QUAND ON APPELE URL(/) : localhost:port/ ------------------------------------------
  * -----------------------------------------------------------------------------------------------------------*/
 app.get('/', function(req, rep){
     console.log("Je suis dans le /");
+    //Ne rien faire ICI
 });
+/** ----------------------------------------------------------------------------------------------------------
+ * ----------------------- QUAND ON FAIT DU PUSH --------------------------------------------------------------
+ * -----------------------------------------------------------------------------------------------------------*/
 
-io.sockets.on('connection', function(socket){    /** socket = socket utilisateur en cours*/
-    console.log("Je suis dans io.sockets.on() /");
+ io.sockets.on('connection', function(socket){    /** socket = socket utilisateur en cours*/
     var current_user=false;
-    /** afficher tout les utilisateurs dans la liste*/
+    /** informer tous les autres utilisateurs qu'un nouveau utilisé est connecte au chat */
     for(var user in list_users){
         socket.emit('new-user-created', list_users[user]);
     }
-    for(var msg in list_messages){
-        socket.emit('new-message-coming', list_messages[msg]);
+    /** diffuser les messages aux autres utilisateurs */
+    for(var var_msg in list_messages){
+        socket.emit('new-message-coming', list_messages[var_msg]);
     }
+    /**----------------------------- GESTION MESSAGERIE ------------------------------------------------- */
 
-    /**---------------- GESTION MESSAGERIE -------------------- */
-
-    /** Message reçu */
+    /** Message reçu par l'evenement : new-message-coming*/
     socket.on('new-message-coming', function(message){
         message.user=current_user;
         date=new Date();
@@ -254,12 +257,11 @@ io.sockets.on('connection', function(socket){    /** socket = socket utilisateur
         console.log('L id : '+message.user.id);
     });
 
-    /**------------- GESTION CONNECTIONS-------------------------- */
+    /**----------------------------- GESTION CONNECTIONS--------------------------------------------------- */
 
-    /** ---LOGIN---- Dans cette partie on reçoit les évènement prevenant du côté client  **/
+    /** LOGIN: reception de l'evenement login du nouveau user */
     socket.on('login', function(user){  // A la réception de loginEvent, j'envoi une fonction de CallBack
-        console.log("Je suis dans io.socket.on('login') /");
-        //  enregistrer les proprietes du client
+        //enregistrer les proprietes du client
         date=new Date();
         current_user=user;
         current_user.id=user.mail.replace('@', '-').replace('.', '-');
@@ -268,29 +270,22 @@ io.sockets.on('connection', function(socket){    /** socket = socket utilisateur
         current_user.minutes=date.getMinutes();
         /** prévenir l'utilisateur et tous les autrees que le new client est enregistre*/
         io.sockets.emit("new-user-created", current_user);
-
         /** ajouter le nouveau dans la liste */
         list_users[current_user.id]=current_user;
         console.log(list_users);
-
         /** lui dire qu'il est bien connecté **/
         socket.emit("logging-ok");
         console.log(user);
     });
 
-    /**
-     * ----QUIT---- Quand l'user quitte le chat, on le supprime de la liste
-     */
+    /** QUITTER le chat : Quand l'user quitte le chat, on le supprime de la liste  */
     socket.on('disconnect', function(){
         console.log("Disconnected");
-        if(!current_user){   return false;  }
-        delete list_users[current_user.id];
-        //prevenir les autres users
+        if(!current_user){return false;}
         io.sockets.emit('user-disconnected', current_user);
-
+        delete list_users[current_user.id];
     });
 });
-
 
 /** ----------------------------------------------------------------------------------------------------------
  * -------------------------------------------- FONCTIONS COMMUNES -------------------------------------------
@@ -311,10 +306,7 @@ function saveMessageDB(message){
 
 };
 
-// deconnecter un utilisateur
-function deconect(){};
 
-/**  */
 
 /** ----------------------------------------------------------------------------------------------------------
  * ----------------------------ECOUTE DES SOCKETS SUR LE PORT 3000 DU SERVEUR ---------------------------------
