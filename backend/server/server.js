@@ -33,6 +33,8 @@ io=require('socket.io')(http_server);
  app.get('/addmessage', function(req, rep){
         console.log("Je suis dans addmessage")
         var msg=req.query.message;
+        date=new Date();
+        var avatar='http://robohash.org/'+  md5.digest_s(date.getHours()) +'/arfset_bg1/3.14159?size=60x60';
         /** save message*/
         if(req.query.message != null){
             saveMessageDB(msg);
@@ -43,12 +45,21 @@ io=require('socket.io')(http_server);
                 client.writeHead(200, {'Content-Type': 'application/json', "Access-Control-Allow-Origin": "*" });
                 client.end(JSON.stringify({			 // on lui envoie le message
                     user: msg.user,
-                    message: msg
+                    message: msg,
+                    hour:date.getHours(),
+                    minutes:date.getMinutes(),
+                    avatar:avatar
                 }));
         }
         console.log("msg envoyé "+msg);
         rep.writeHead(200, {'Content-Type': 'application/json', "Access-Control-Allow-Origin":"*" });
-        rep.write(JSON.stringify(msg)); //faut absolument le garder pour que ça marche
+        rep.write(JSON.stringify({			 // on lui envoie le message
+            user: msg.user,
+            message: msg,
+            hour:date.getHours(),
+            minutes:date.getMinutes(),
+            avatar:avatar
+        }));
         rep.end();
  });
 
@@ -132,7 +143,7 @@ app.get('/newuser', function(req, rep){
     //si le nombre de message que j'ai dans mon tableau list_message est sup à l'heure, j'envoie la data à l'user
     if(list_messages.length>0){
         for(var i=0; i<list_messages.length;i++){
-            console.log("le message -> : " +list_messages[i]["message"]);
+            console.log("le new message : "+list_messages[i]["hour"] + " min "+ list_messages[i]["seconds"]);
             //list_messages[i]["seconds"] > secondes ||
             if(  list_messages[i]["hour"] > heure && list_messages[i]["minutes"] > minutes  ){
                 new_messages.push(list_messages[i]);
@@ -142,6 +153,7 @@ app.get('/newuser', function(req, rep){
     console.log("la liste des nouveau messages "+new_messages.length);
     if(new_messages.length>0){
         rep.writeHead(200, {'Content-Type': 'application/json', "Access-Control-Allow-Origin":"*" });
+        console.log("le contenu du new message :" + new_messages);
         rep.write(JSON.stringify(new_messages)); //faut absolument le garder pour que ça marche
         rep.end();
     }else{

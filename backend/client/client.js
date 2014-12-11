@@ -217,7 +217,7 @@
         return false;
     };
     // Appel à la fonction polling
-    //polling();
+    polling();
     //pollingUsers()
 
     /** -----------------------------------------------------------------------------------------------------------------
@@ -227,7 +227,6 @@
      // Start Long-polling for messages
      // on crée une novuelle fonction javascript
      function longPolling( ){
-        alert("longpolliig demarre");
         var time;
         //on envoie la requete vers le serveur dont le port est 3000:
         //on lui passe en parametre un timestamp et un lastid
@@ -247,12 +246,20 @@
                         longPolling( );
                     }, 1000 );
                     var msg='';
+
                     list_messages=JSON.stringify(data);
-                    $('#fuck').append("<p>Votre message est reçu: contenu  " + list_messages.toString()+"</p>");
+                    //alert(list_messages);
+                    var json=JSON.parse(list_messages);
+
+                    // var message_template=$('#message_tpl').html(); //recuperer la div où s'affiche les msg
+                    //$('#message_tpl').remove();//puis la supprimer
+
+                    $('#fuck').append("<p>Message : " +json.message+" Heure : "+ json.hour+":"+json.minutes+"</p>");
                     //on injecte le contenu message dans le template message_tmpl
+                    var message= {"hour":json.hour, "minutes":json.minutes, "message":json.message,"user.avatar":json.avatar ,"message.user.id":" dsdsd"};
                     //$('#listmessages').append('<div class="message-right" style="margin-bottom:-45px; ">'
                     //    + Mustache.render(message_template, message) +
-                      //  '</div>');
+                    //    '</div>');
                 }
                 else if( data.status == 'error' ){
                     alert('We got confused, Please refresh the page!');
@@ -272,7 +279,7 @@
         });
         return false;
      }
-     longPolling();
+    // longPolling();
 
     /** --------------------------------------------------------------------------------------------------------------------
     *   -------------------------------------------------------- SECTION PUSH ----------------------------------------------
